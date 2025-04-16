@@ -1,0 +1,45 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+*.pdb
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+sdist
+*.egg-info/
+
+# Docker
+docker-compose.override.yml
+Dockerfile*
+
+# Virtualenv
+venv/
+env/
+.venv/
+ENV/
+
+# IDEs & Editors
+.idea/
+.vscode/
+*.swp
+
+# Log files
+*.log
+
+# Misc
+*.bak
+*.tmp
+
+# Local config files
+*.local
+
+# Flask instance folder
+instance/
+
+# Let's Encrypt certificates (optional)
+etc/letsencrypt/
