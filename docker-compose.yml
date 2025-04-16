@@ -1,0 +1,10 @@
+services:
+  certs-api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - /etc/letsencrypt:/certs:ro
+      - ./app:/app  # <--- live mount du code Python
+    restart: unless-stopped
+
