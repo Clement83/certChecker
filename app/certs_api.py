@@ -3,7 +3,7 @@ import ssl
 import logging
 from datetime import datetime
 from pathlib import Path
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 
 # === Logging setup ===
 logging.basicConfig(
@@ -47,19 +47,31 @@ def list_certificates():
             logging.warning(f"cert.pem not found for domain: {domain}")
     return certs
 
-@app.route("/certs", methods=["GET"])
-def get_certs():
+def get_filtered_certs_from_request() -> list:
     warn_days = request.args.get("warn_days", type=int)
-    logging.info(f"Request received: /certs?warn_days={warn_days}")
+    logging.info(f"warn_days param: {warn_days}")
 
     certs = list_certificates()
-
     if warn_days is not None:
-        before_filter = len(certs)
+        before = len(certs)
         certs = [c for c in certs if c.get("days_remaining", 9999) <= warn_days]
-        logging.info(f"Filtered certs: {len(certs)} of {before_filter} (<= {warn_days} days remaining)")
+        logging.info(f"Filtered certs: {len(certs)} of {before} (<= {warn_days} days)")
+    return certs
 
+@app.route("/count", methods=["GET"])
+def get_cert_count():
+    certs = get_filtered_certs_from_request()
+    count = len(certs)
+    logging.info(f"Returning count: {count}")
+    return Response(f"{count}", mimetype="text/plain")
+
+
+@app.route("/", methods=["GET"])
+def get_certs():
+    certs = get_filtered_certs_from_request()
+    logging.info(f"Returning {len(certs)} certs")
     return jsonify(certs)
+
 
 if __name__ == "__main__":
     logging.info("🚀 Starting the certs API server...")
